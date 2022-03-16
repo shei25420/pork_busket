@@ -1,7 +1,10 @@
+admins -> phone (unique), password, suspended
 
-users -> phone (unique), password, suspended
+
+users -> phone (unique), suspended
 user_locations -> name, user_id
-user_activities -> start_shift, end_shift, user_id
+
+waiter_activities -> start_shift, end_shift, user_id
 
 menu_categories -> name (unique)
 menu_items -> name, menu_category_id, priority

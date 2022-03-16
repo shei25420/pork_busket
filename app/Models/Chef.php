@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Chef extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -18,7 +18,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'phone'
+        'name',
+        'phone',
+        'password'
     ];
 
     /**
@@ -27,6 +29,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        'password',
         'remember_token',
     ];
 
@@ -36,11 +39,6 @@ class User extends Authenticatable
      * @return mixed
      */
     public function getAuthIdentifier()
-    {
-        return $this->phone;
-    }
-
-    public function routeNotificationForVonage($notification)
     {
         return $this->phone;
     }

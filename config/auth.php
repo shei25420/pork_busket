@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     /*
@@ -40,6 +39,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins'
+        ],
+        'waiter' => [
+            'driver' => 'session',
+            'provider' => 'waiters'
+        ],
+        'chef' => [
+            'driver' => 'session',
+            'provider' => 'chefs'
+        ],
     ],
 
     /*
@@ -64,7 +75,18 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'waiters' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Waiter::class,
+        ],
+        'chefs' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Chef::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

@@ -13,7 +13,7 @@ class StoreMenuCategoryRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return auth('admin')->check();
     }
 
     /**
@@ -24,7 +24,8 @@ class StoreMenuCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:menu_categories,name'
+            'name' => 'required|string|unique:menu_categories,name',
+            'priority' => 'required|numeric'
         ];
     }
 }

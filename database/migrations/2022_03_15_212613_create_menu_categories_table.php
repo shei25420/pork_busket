@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('menu_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->foreignId('admin_id');
             $table->timestamps();
         });
     }
