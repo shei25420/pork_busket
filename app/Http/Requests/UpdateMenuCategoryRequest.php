@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMenuCategoryRequest extends FormRequest
+class UpdateMenuCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,8 @@ class StoreMenuCategoryRequest extends FormRequest
         return [
             'name' => 'required|string|unique:menu_categories,name',
             'priority' => 'required|numeric',
-            'description' => 'string',
-            'image' => 'required|image|mimes:png,jpg,jpeg,gif,svg'
+            'admin_id' => 'required|numeric|exists:admins,id',
+            'image' => 'image|mimes:png,jpg,jpeg,gif,svg'
         ];
     }
 }

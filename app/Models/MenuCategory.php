@@ -9,5 +9,14 @@ class MenuCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'priority'];
+    protected $fillable = ['name', 'slug', 'priority', 'description'];
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function menu_items() {
+        return $this->hasMany(MenuItem::class);
+    }
 }

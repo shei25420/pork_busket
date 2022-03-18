@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMenuCategoryRequest extends FormRequest
+class StoreAllergenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,8 @@ class StoreMenuCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:menu_categories,name',
-            'priority' => 'required|numeric',
-            'description' => 'string',
-            'image' => 'required|image|mimes:png,jpg,jpeg,gif,svg'
+            'name' => 'required|string|unique:allergens,name',
+            'description' => 'string'
         ];
     }
 }

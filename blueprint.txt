@@ -1,10 +1,47 @@
+users -> phone (unique), suspended
+
 admins -> phone (unique), password, suspended
 
+waiters -> phone (unique), password, suspended
 
-users -> phone (unique), suspended
+chefs-> phone (unique), password, suspended
+
+inventories -> name (unique), slug, description (nullable)
+
+stock_options -> name (unique), description (nullable), action (0 -> reduction, 1 -> addition, 2 -> waste)
+
+stocks -> name (unique), description (nullable)
+
+stock_products -> sku (unique), name, qty, variation (string)
+
+meal_times -> name (unique), slug (unique), start, end
+
+allergens -> name (unique), slug (unique), description (nullable)
+
+menu_options -> name (unique), max, min
+
+options -> name, price, menu_option_id
+
+menu_categories -> name (unique), slug, priority, (upload menu category image), description (nullable)
+
+menu_items -> name (unique), slug, menu_category_id, menu_option_id (nullable), meal_time_id, stock_product_id , description, trackable ---> (upload menu items image)
+
+specials -> menu_item_id, special_type,     
+
+allergen_menu_item -> allergen_id, menu_item_id
+
+orders -> ref (unique), status (0 -> pending, 1 -> in_progress, 2 -> done), waiter_id, chef_id, transaction_id, placed, serviced, in_progress, done
+
+order_menu_item -> order_id, menu_item_id
+
+transactions -> ref (unique), payment_type (0 --> mpesa, 1 --> Paypal, 2 --> CC, 3 --> cash)
+
+images -> id, path, imageable_id, imageable_type
+
 user_locations -> name, user_id
 
-waiter_activities -> start_shift, end_shift, user_id
+waiter_activities -> start_shift, end_shift, waiter_id
 
-menu_categories -> name (unique)
-menu_items -> name, menu_category_id, priority
+chefs_activities -> start_shift, end_shift, chef_id
+
+Inventory Track link with menu item for stock qty

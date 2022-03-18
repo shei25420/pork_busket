@@ -13,12 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('menu_categories', function (Blueprint $table) {
+        Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
-            $table->unsignedSmallInteger('priority');
+            $table->string('name');
+            $table->string('slug');
             $table->text('description');
+            $table->foreignId('menu_category_id');
+            $table->foreignId('menu_option_id')->nullable();
+            $table->foreignId('menu_time_id');
+            $table->foreignId('stock_product_id')->nullable();
+            $table->boolean('trackable')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_categories');
+        Schema::dropIfExists('menu_items');
     }
 };

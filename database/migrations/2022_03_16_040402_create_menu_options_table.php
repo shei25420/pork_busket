@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('menu_categories', function (Blueprint $table) {
+        Schema::create('menu_options', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('slug')->unique();
-            $table->unsignedSmallInteger('priority');
-            $table->text('description');
+            $table->unsignedTinyInteger('min')->default(0);
+            $table->unsignedTinyInteger('max')->default(0);
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_categories');
+        Schema::dropIfExists('menu_options');
     }
 };

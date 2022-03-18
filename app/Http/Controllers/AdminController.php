@@ -15,6 +15,7 @@ class AdminController extends Controller
         $credentials['suspended'] = 0;
 
         if(Auth::guard('admin')->attempt($credentials, $request->safe()->only('remember'))) {
+            $request->session()->regenerate();
             return $this->success(['user' => auth('admin')->user()]);
         }
 

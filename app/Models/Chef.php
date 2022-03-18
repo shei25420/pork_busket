@@ -42,4 +42,8 @@ class Chef extends Authenticatable
     {
         return $this->phone;
     }
+
+    public function orders() {
+        return $this->hasMany(Order::class);
+    }
 }

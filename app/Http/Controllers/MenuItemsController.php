@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helpers;
+use App\Models\MenuItem;
 use Illuminate\Support\Str;
-use App\Models\MenuCategory;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\StoreMenuCategoryRequest;
-use App\Http\Requests\UpdateMenuCategoryRequest;
+use App\Http\Requests\StoreMenuItemRequest;
 
-class MenuCategoriesController extends Controller
+class MenuItemsController extends Controller
 {
     use ApiResponder;
     /**
@@ -23,11 +22,11 @@ class MenuCategoriesController extends Controller
     public function index()
     {
         try {
-            $categories = MenuCategory::with('image')->latest()->get();
+            $menu_items = MenuItem::with('image', 'category')->latest()->get();
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
-        return $this->success($categories);
+        return $this->success($menu_items);
     }
 
     /**
@@ -36,27 +35,29 @@ class MenuCategoriesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreMenuCategoryRequest $request)
+    public function store(StoreMenuItemRequest $request)
     {
         $data = $request->validated();
-        $data['slug'] = Str::slug($data['name']);
-        if(!$request->hasFile('image')) {
-            return $this->fail('Unprocessable Data', 422, ['errors' => ['image' => 'Image is required']]);
-        }
-    
+        if(!$request->hasFile('image')) return $this->fail('unprocessable entity', 422, ['errors' => ['image' => ['Image is required']]]);
+
+        if($data['store_product_id']) $data['trackable'] = true;
         try {
-            $menu_category = MenuCategory::create($data);
-        
-            //Upload Category Image
-            $resize_data = ['width' => 80, 'height' => 80];
+            $slug = Str::slug($data['name']);
+            while(MenuItem::where('slug', $slug)->exists()) $slug = Str::slug($slug);
+            $data['slug'] = $slug;
+
+            $menu_item = MenuItem::create($data);
+
+            //Upload Menu Item image
+            $resize_data = ['width' => 200, 'height' => 200];
             $res = Helpers::ImageUpload($request->file('image'), public_path('storage'), true, $resize_data);
             if(!$res['status']) $this->fail($res['message'], 500);
             
-            $menu_category->image()->create(['url' => $res['url']]);
+            $menu_item->image()->create(['url' => $res['url']]);
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
-        return $this->success($menu_category);
+        return  $this->success($menu_item);
     }
 
     /**
@@ -65,16 +66,17 @@ class MenuCategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($slug)
+    public function show($id)
     {
-        $data = Validator::make(['slug' => $slug], ['slug' => 'required|string|exists:menu_categories,slug'])->validated();
+        $data = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:menu_items,id'])->validated();
         try {
-            $menu_category = MenuCategory::with('image', 'menu_items')->where('id', $data['id'])->first();
-            if(!$menu_category) return $this->fail('Menu category could not be found', 404);
+            $menu_item = MenuItem::with('image')->where('id', $data['id'])->first();
+            if(!$menu_item) return $this->fail('Menu item not found', 404);
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
-        return $this->success($menu_category);
+
+        return $this->success($menu_item);
     }
 
     /**
@@ -84,17 +86,17 @@ class MenuCategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMenuCategoryRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $data = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:menu_categories,id'])->validated();
+        $data = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:menu_items,id'])->validated();
         try {
-            $menu_category = MenuCategory::with('image')->where('id', $data['id'])->first();
-            if(!$menu_category) return $this->fail('Menu category could not be found', 404);
-            
+            $menu_item = MenuItem::with('image')->where('id', $data['id'])->first();
+            if(!$menu_item) return $this->fail('Menu item not found', 404);
+     
             //check if updating  image t boo
             if($request->hasFile('image')) {
                 //Get Image Path
-                $image_path = $menu_category->image->url; 
+                $image_path = $menu_item->image->url; 
                 Storage::disk('public')->delete($image_path);
 
                 Helpers::ImageUpload($request->file('image'), null, true,  ['width' => 80, 'height' => 80], $image_path);
@@ -102,7 +104,8 @@ class MenuCategoriesController extends Controller
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
-        return $this->success($menu_category->update($request->validated()));
+
+        return $this->success($menu_item);
     }
 
     /**
@@ -113,17 +116,18 @@ class MenuCategoriesController extends Controller
      */
     public function destroy($id)
     {
-        $data = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:menu_categories,id'])->validated();
+        $data = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:menu_items,id'])->validated();
         try {
-            $menu_category = MenuCategory::with('image')->where('id', $data['id'])->first();
-            if(!$menu_category) return $this->fail('Menu category could not be found', 404);
+            $menu_item = MenuItem::with('image')->where('id', $data['id'])->first();
+            if(!$menu_item) return $this->fail('Menu item not found', 404);
 
-            //Delete Corresponding Image
-            $image_path = $menu_category->image->url; 
+            //Delete Menu Item Image
+            $image_path = $menu_item->image->url; 
             Storage::disk('public')->delete($image_path);
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
-        return $this->success($menu_category->delete());
+
+        return $this->success($menu_item);
     }
 }
