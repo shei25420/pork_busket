@@ -6,6 +6,9 @@ use App\Models\Chef;
 use App\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreChefRequest;
+use App\Models\Order;
+use App\Models\Waiter;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 
 class ChefsController extends Controller
@@ -19,7 +22,7 @@ class ChefsController extends Controller
     public function index()
     {
         try {
-            $chefs = Chef::latest()->first();
+            $chefs = Chef::latest()->get();
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
@@ -93,19 +96,29 @@ class ChefsController extends Controller
         return $this->success($chef->delete());
     }
 
-    public function done(Request $request) {
+    public function order_complete(Request $request) {
         $data = $request->validate(['id' => 'required|numeric|exists:orders,id']);
         try {
             $order = auth('chefs')->user()->orders()->where('id', $data['id'])->first();
-            if(!$order) return $this->fail('Chef not found', 404);
+            if(!$order) return $this->fail('Order not found', 404);
 
             $order->status = 2;
             $order->done = NOW();
             $order->save();
 
             //Send Order To Waiter Responsible
+            $waiter = Waiter::find($order->waiter_id);
+            new Event($waiter->id, $order->id);
+
+            //Check for any pending orders
+            $order = Order::where('status', 0)->first();
+            if($order) {
+                $order->update(['chef_id' => auth('chefs')->id(), 'status' => 1, 'in_progress' => NOW()]);
+                return $this->success($order);
+            }
         } catch (\Illuminate\Database\QueryException $ex) {
             return $this->fail($ex->getMessage(), 500);
         }
+        return $this->success(1);
     }
 }

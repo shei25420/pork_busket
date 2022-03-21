@@ -13,12 +13,16 @@ class AdminController extends Controller
     public function login(StaffLoginRequest $request) {
         $credentials = $request->safe()->only(['phone', 'password']);
         $credentials['suspended'] = 0;
-
+        // $credentials['phone'] = '254'.$credentials['phone'];
         if(Auth::guard('admin')->attempt($credentials, $request->safe()->only('remember'))) {
             $request->session()->regenerate();
             return $this->success(['user' => auth('admin')->user()]);
         }
 
         return $this->fail('Invalid email or password', 401);
+    }
+
+    public function makeOrder() {
+        
     }
 }

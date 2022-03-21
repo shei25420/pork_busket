@@ -4,7 +4,7 @@ admins -> phone (unique), password, suspended
 
 waiters -> phone (unique), password, suspended
 
-chefs-> phone (unique), password, suspended
+chefs -> phone (unique), password, suspended
 
 inventories -> name (unique), slug, description (nullable)
 
@@ -30,7 +30,7 @@ specials -> menu_item_id, special_type,
 
 allergen_menu_item -> allergen_id, menu_item_id
 
-orders -> ref (unique), status (0 -> pending, 1 -> in_progress, 2 -> done), waiter_id, chef_id, transaction_id, placed, serviced, in_progress, done
+orders -> ref (unique), status (0 -> pending, 1 -> in_progress, 2 -> done), order_type (0 -> in_house, 1 -> delivery), waiter_id, chef_id, transaction_id, placed, serviced, in_progress, done
 
 order_menu_item -> order_id, menu_item_id
 

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('ref')->unique();
             $table->unsignedTinyInteger('status')->default(0);
+            $table->boolean('order_type');
             $table->foreingId('waiter_id')->nullable();
             $table->foreingId('chef_id')->nullable();
             $table->foreingId('transaction_id')->nullable();

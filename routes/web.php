@@ -2,16 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChefsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\StocksController;
+use App\Http\Controllers\WaitersController;
 use App\Http\Controllers\AllergensController;
 use App\Http\Controllers\MealTimesController;
 use App\Http\Controllers\MenuItemsController;
+use App\Http\Controllers\InventoriesController;
 use App\Http\Controllers\MenuOptionsController;
 use App\Http\Controllers\StockOptionsController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\MenuCategoriesController;
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Accept, X-Requested-With, X-CSRF-TOKEN');
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -55,6 +61,20 @@ Route::domain('management.'.config('app.url'))->group(function() {
             Route::delete('/destroy/{id}', [StocksController::class, 'destroy']);
         });
 
+        Route::prefix('chefs')->group(function () {
+            Route::get('/', [ChefsController::class, 'index']);
+            Route::post('/store', [ChefsController::class, 'store']);
+            Route::put('/update/{id}', [ChefsController::class, 'update']);
+            Route::delete('/destroy/{id}', [ChefsController::class, 'destroy']);
+        });
+
+        Route::prefix('waiters')->group(function () {
+            Route::get('/', [WaitersController::class, 'index']);
+            Route::post('/store', [WaitersController::class, 'store']);
+            Route::put('/update/{id}', [WaitersController::class, 'update']);
+            Route::delete('/destroy/{id}', [WaitersController::class, 'destroy']);
+        });
+
         Route::prefix('meal_times')->group(function () {
             Route::post('/store', [MealTimesController::class, 'store']);
             Route::put('/update/{id}', [MealTimesController::class, 'update']);
@@ -84,6 +104,21 @@ Route::domain('management.'.config('app.url'))->group(function() {
             Route::put('/update/{id}', [MenuItemsController::class, 'update']);
             Route::delete('/destroy/{id}', [MenuItemsController::class, 'destroy']);
         });
+    });
+    Route::get('/{any}', function () {
+        return view('welcome');
+    })->where('any', '[\/\w\.-]*');
+});
+
+Route::domain('waiter.'.config('app.url'))->group(function () {
+    Route::middleware(['auth:waiter'])->group(function () {
+        
+    });
+});
+
+Route::domain('chef.'.config('app.url'))->group(function () {
+    Route::middleware(['auth:chef'])->group(function () {
+        
     });
 });
 
@@ -115,4 +150,8 @@ Route::domain(config('app.url'))->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/', fn() => "sHITHEAD");
     });
+
+    Route::get('/{any}', function () {
+        return view('welcome');
+    })->where('any', '[\/\w\.-]*');
 });

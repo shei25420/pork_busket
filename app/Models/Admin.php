@@ -35,7 +35,7 @@ class Admin extends Authenticatable
         'remember_token',
     ];
 
-        /**
+    /**
      * Get the name of the unique identifier for the user.
      *
      * @return string
@@ -51,6 +51,6 @@ class Admin extends Authenticatable
      */
     public function getAuthIdentifier()
     {
-        return '254'.$this->phone;
+        return $this->phone;
     }
 }
